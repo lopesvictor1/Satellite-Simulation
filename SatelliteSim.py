@@ -156,7 +156,7 @@ if __name__ == '__main__':
         print(f'Iteration {i+1}')
         #plot_satellites(sats, ax, i)
         for sat in sats:
-            print(f'Satellite {sat.number}. Capacity: {sat.capacity}. Initial Capacity: {sat.initial_capacity}. Usable: {sat.usable}. In Range: {sat.in_range()}, Processes: {sat.processes}')
+            #print(f'Satellite {sat.number}. Capacity: {sat.capacity}. Initial Capacity: {sat.initial_capacity}. Usable: {sat.usable}. In Range: {sat.in_range()}, Processes: {sat.processes}')
             #print(f'Satellite {sat.number}: \nCircumference: {sat.orbit_circumference} km\nx = {sat.pos[0]} km\ny = {sat.pos[1]} km\nAmount Moved: {sat.amount_moved} km\nOrbit Circumference: {sat.orbit_circumference}\n')
             if sat.usable and (sat.capacity < sat.initial_capacity):
                 if sat.in_range():
@@ -166,16 +166,17 @@ if __name__ == '__main__':
                         if proc.done:
                             print('Solicitation done!')
                             print(f'Releasing satellite {sat.number}...')
-                            sat.remove_process(req)
+                            sat.remove_process(proc)
                             proc.release_satellite()
-                            print(f'Satellite {sat.number} released!')
+                            print(f'Satellite {proc.number} released!')
                         else:
-                            print(f'Solicitation {req.name}: Time left: {req.time_needed}')
+                            print(f'Solicitation {proc.name}: Time left: {proc.time_needed}')
                             pass
                     
                     if sat.is_leaving() == True:
                         print(f'Satellite {sat.number} is leaving range!')
                         print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+                        print(f'Satellite {sat.number} has the processes: {[x.name for x in sat.processes]}')
                         for process in sat.processes:
                             print(f'Searching for a new satellite for solicitation {process.name}...')
                             proc = search_satellite(sats, process)
@@ -217,8 +218,10 @@ if __name__ == '__main__':
                 print(f'Solicitation {i} added to the list of requests!')
             else:
                 print(f'Solicitation {i} could not be added to the list of requests!')
+        else:
+            print(f'Current Requests: {[r.name for r in requests]}')
             
-        time.sleep(0.1)
+        time.sleep(2)
             
             
     plt.show()  
