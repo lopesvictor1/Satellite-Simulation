@@ -6,8 +6,7 @@ This project simulates the movement of satellites around the Earth within a spec
 
 - Simulates the movement of multiple satellites around the Earth.
 - Satellites have adjustable altitudes, speeds, and initial positions.
-- Visualizes satellite positions in real-time.
-- Calculates distances to the inverse edge of the orbit range.
+- Visualizes simulated satellite positions in real-time.
 
 ## Example
 This is an frame of the execution of the code. The arrows next to the Satellites points towards its next movement (his 'angle'). Satellites with red arrows are within the range of action.

@@ -127,7 +127,7 @@ fig, ax = plt.subplots(figsize=(10, 10))
 
 # Criar satélites aleatórios
 sats = []
-for i in range(100):
+for i in range(500):
     x = np.random.randint(-5000, 5000)
     y = np.random.randint(-5000, 5000)
     angle = np.random.uniform(0, 2*np.pi)
