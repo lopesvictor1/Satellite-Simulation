@@ -14,15 +14,15 @@ class Satellite:
         self.pos = (x, y)
         self.pos_edge = (0, 0)
         self.pos_range = (0, 0)
-        self.speed = 27000/3600
+        self.speed = 27000/100
         self.orbit_circumference = self.define_orbit_circumference()
         self.distance_to_inverse_edge = self.define_distance_to_inverse_edge()
         self.amount_moved = self.distance_to_inverse_edge
         self.usable = self.define_usable()
-        self.time_in_range = self.define_time_in_range()
+        #self.time_in_range = self.define_time_in_range()
         self.pos_end = self.define_end_pos()
         self.status = self.define_status()
-
+        self.processes = []
         self.initial_capacity = 100
         self.capacity = 100
         
@@ -71,7 +71,7 @@ class Satellite:
         delta_x = self.pos_edge[0]
         delta_y = self.pos_edge[1]
         moved = 0
-        while moved < EARTH_RADIUS:
+        while moved < EARTH_RADIUS*2:
             delta_x += 1 * np.cos(self.angle)
             delta_y += 1 * np.sin(self.angle)
             moved += 1
@@ -108,8 +108,8 @@ class Satellite:
             self.pos_range = (delta_x, delta_y)
             
             while np.sqrt(delta_x**2 + delta_y**2) < RANGE_OF_ACTION:
-                delta_x += 1 * np.cos(self.angle)
-                delta_y += 1 * np.sin(self.angle)
+                delta_x += self.speed * np.cos(self.angle)
+                delta_y += self.speed * np.sin(self.angle)
                 time_in_range += 1
                 
             return time_in_range
@@ -192,7 +192,9 @@ class Satellite:
         self.status = self.define_status()
         
         # Update the position
-        self.pos += (delta_x, delta_y)
+        x = self.pos[0] + delta_x
+        y = self.pos[1] + delta_y 
+        self.pos = (x, y)
             
         self.amount_moved += speed
         
@@ -244,23 +246,25 @@ class Satellite:
             distance_to_range = distance_to_end + distance_from_start_to_range
         return distance_to_range
 
-    def reserve_capacity(self, capacity):
+    def add_process(self, process):
         '''
-        Reserve the capacity of the satellite.
+        Add a process to the satellite.
         
-        Required: capacity (int): The capacity to reserve.
-        Returns: Updates the capacidade attribute of the satellite.
+        Required: process (Request): The process to add to the satellite.
+        Returns: Updates the processes attribute of the satellite.
         '''
-        self.capacity -= capacity
+        self.capacity -= process.processing_capacity
+        self.processes.append(process)
         
-    def release_capacity(self, capacity):
+    def remove_process(self, process):
         '''
-        Release the capacity of the satellite.
+        Remove a process from the satellite.
         
-        Required: capacity (int): The capacity to release.
-        Returns: Updates the capacidade attribute of the satellite.
+        Required: process (Request): The process to remove from the satellite.
+        Returns: Updates the processes attribute of the satellite.
         '''
-        self.capacity += capacity
+        self.capacity += process.processing_capacity
+        self.processes.remove(process)
         
     
     def in_range(self):
@@ -275,3 +279,21 @@ class Satellite:
         if np.sqrt((self.pos[0])**2 + (self.pos[1])**2) < RANGE_OF_ACTION:
             in_range = True
         return in_range
+    
+    def is_leaving(self):
+        '''
+        Check if the satellite is leaving the range of the action.
+        
+        Required:   self.x_pos (int): The x position of the satellite in km.
+                    self.y_pos (int): The y position of the satellite in km.
+        Returns: is_leaving (bool): True if the satellite is leaving the range of the action, False otherwise.
+        '''
+        is_leaving = False
+        delta_x = self.pos[0]
+        delta_y = self.pos[1]
+        
+        delta_x += self.speed * np.cos(self.angle)
+        delta_y += self.speed * np.sin(self.angle)
+        if np.sqrt(delta_x**2 + delta_y**2) > RANGE_OF_ACTION:
+            is_leaving = True
+        return is_leaving
